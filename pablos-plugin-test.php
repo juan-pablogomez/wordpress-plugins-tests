@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 /**
  * 
  * Plugin Name: Pablos Puglin
@@ -12,65 +13,77 @@
  * License: GPL v2 or later  
  * @package pablosPlugin
  *  
-*/
+ */
 
 
 
 
 defined('ABSPATH') or die("You can't access this file");
 
-class PablosPlugin {
+if (!class_exists('PablosPlugin')) {
+  class PablosPlugin
+  {
 
-  function __construct() {
-    add_action('init',array($this, 'custom_post_type'));
+    function __construct()
+    {
+      add_action('init', array($this, 'custom_post_type'));
+    }
+    function register()
+    {
+      add_action('admin_enqueue_scripts', array($this, 'enqueue')); // => For Backend 'ADMIN'
+      // add_action('wp_enqueue_scripts', array($this, 'enqueue')); // For Frontend 'WP'
+
+      add_action('admin_menu', array($this, 'add_admin_pages'));
+    }
+
+    public function add_admin_pages(){
+      add_menu_page('Pablos Plugin', 'Pablos', 'manage_options', 'pablos_plugin', array($this, 'admin_index'), 'dashicons-admin-customizer', 110);
+    }
+
+    public function admin_index() {
+      // Require template
+      require_once plugin_dir_path(__FILE__) . 'templates/admin.php';
+    }
+
+
+    function activate()
+    {
+      require_once plugin_dir_path(__FILE__) . 'includes/pablos-plugin-activate.php';
+      PablosPluginActivate::activate();
+    }
+
+    function deactivate()
+    {
+      require_once plugin_dir_path(__FILE__) . 'includes/pablos-plugin-deactivate.php';
+      PablosPluginDeactivate::deactivate();
+    }
+
+    function custom_post_type()
+    {
+      register_post_type('job', array(
+        'public' => true,
+        'label' => 'Jobs'
+      ));
+    }
+
+    function enqueue()
+    {
+      //enque all scripts
+      wp_enqueue_style('pluginstyle', plugins_url('/assets/style.css', __FILE__));
+      wp_enqueue_script('pluginscript', plugins_url('/assets/script.js', __FILE__));
+    }
   }
-  function register() {
-    add_action('admin_enqueue_scripts', array($this, 'enqueue')); // => For Backend 'ADMIN'
-    // add_action('wp_enqueue_scripts', array($this, 'enqueue')); // For Frontend 'WP'
-  }
 
-  // function activate() {
-  //   // Create CPT
-  //   $this->custom_post_type();
-  //   // Flush write rules
-  //   flush_rewrite_rules();
-  // }
-  
-  // function deactivate(){
-  //   // Flush write rules
-  //   flush_rewrite_rules();
-
-  // }
-
-  function custom_post_type() {
-    register_post_type('job', array(
-      'public' => true,
-      'label' => 'Jobs'
-    ));
-  }
-
-  function enqueue(){
-    //enque all scripts
-    wp_enqueue_style('pluginstyle', plugins_url('/assets/style.css', __FILE__ ));
-    wp_enqueue_script('pluginscript', plugins_url('/assets/script.js', __FILE__ ));
-  }
-
-
-}
-
-if (class_exists('PablosPlugin')) {
   $pablosPlugin = new PablosPlugin();
   $pablosPlugin->register();
 
   // For static Methods, whitout the 'this'. No inicialize the class, just using the class itself's name
   //  => PablosPlugin::register();
+
+
+  // Activation
+  register_activation_hook(__FILE__, array($pablosPlugin, 'activate'));
+
+  // Deactivation
+  register_deactivation_hook(__FILE__, array($pablosPlugin, 'deactivate'));
 }
-
-
-// Activation
-require_once plugin_dir_path(__FILE__) . 'includes/pablos-plugin-activate.php';
-register_activation_hook(__FILE__, array('PablosPluginActivate', 'activate'));
-
-// Deactivation
-require_once plugin_dir_path(__FILE__) . 'includes/pablos-plugin-deactivate.php';
-register_deactivation_hook(__FILE__, array('PablosPluginDeactivate', 'deactivate'));

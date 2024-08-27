@@ -1,0 +1,19 @@
+{
+    "name": "pablo/pablos-plugin-test",
+    "description": "Some plugin starting examples",
+    "type": "project",
+    "license": "GPL",
+    "autoload": {
+        "psr-4": {
+            "Includes\\": "./src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Juan Pablo Gomez",
+            "email": "juan-pablogomez@hotmail.com"
+        }
+    ],
+    "minimum-stability": "dev", 
+    "require": {}
+}

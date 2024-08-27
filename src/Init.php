@@ -1,31 +1,49 @@
 <?php
 
 /**
- * 
- * Plugin Name: Pablos Puglin
- * Plugin URI: https://github.com/juan-pablogomez
- * Description: Plugin practice, test and showcases
- * Version: 1.0
- * Requires at least: 5.8
- * Requires PHP: 7.4
- * Author: Juan Pablo Gómez
- * Author URI: https://curriculum-pablo.netlify.app/
- * License: GPL v2 or later  
- * @package pablosPlugin
- *  
+ * @package PablosPlugin
  */
 
-defined('ABSPATH') or die("You can't access this file");
+namespace Includes;
 
-if(file_exists(dirname(__FILE__) . '/vendor/autoload.php' )) {
-  require_once dirname(__FILE__) . '/vendor/autoload.php';
-}
+final class Init
+{
+  /**
+   * Store all the classes inside an array
+   * @return array Full list of classes
+   */
+  public static function get_services()
+  {
+    return [
+      Pages\Admin::class,
+      Base\Enqueue::class
+    ];
+  }
 
-define('PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('PLUGIN_URL', plugin_dir_url(__FILE__));
+  /**
+   * Loop through the classes, initialize them, and call the register() method if it exists
+   * @return void
+   */
+  public static function register_services()
+  {
+    foreach (self::get_services() as $class) {
+      $service = self::instantiate($class);
+      if (method_exists($service, 'register')) {
+        $service->register();
+      }
+    }
+  }
 
-if(class_exists('Includes\\Init')) {
-  Includes\Init::register_services();
+  /**
+   * Initialize the class
+   * @param $class class from the services array
+   * @return [class instance] [new instance of the class]
+   */
+  private static function instantiate($class)
+  {
+    $service = new $class();
+    return $service;
+  }
 }
 
 // use Includes\Base\Activate;

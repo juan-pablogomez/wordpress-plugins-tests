@@ -23,24 +23,39 @@ defined('ABSPATH') or die("You can't access this file");
 if (!class_exists('PablosPlugin')) {
   class PablosPlugin
   {
+    public $plugin_name;
 
     function __construct()
     {
       add_action('init', array($this, 'custom_post_type'));
+      $this->plugin_name = plugin_basename(__FILE__);
     }
     function register()
     {
+
       add_action('admin_enqueue_scripts', array($this, 'enqueue')); // => For Backend 'ADMIN'
       // add_action('wp_enqueue_scripts', array($this, 'enqueue')); // For Frontend 'WP'
 
       add_action('admin_menu', array($this, 'add_admin_pages'));
+
+      add_filter("plugin_action_links_$this->plugin_name", array($this, 'settings_link'));
     }
 
-    public function add_admin_pages(){
+    public function settings_link($links)
+    {
+      // Add customs settings link
+      $settings_link = '<a href="options-general.php?page=pablos_plugin">Settings</a>';
+      array_push($links, $settings_link);
+      return $links;
+    }
+
+    public function add_admin_pages()
+    {
       add_menu_page('Pablos Plugin', 'Pablos', 'manage_options', 'pablos_plugin', array($this, 'admin_index'), 'dashicons-admin-customizer', 110);
     }
 
-    public function admin_index() {
+    public function admin_index()
+    {
       // Require template
       require_once plugin_dir_path(__FILE__) . 'templates/admin.php';
     }

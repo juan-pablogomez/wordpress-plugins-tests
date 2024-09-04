@@ -1,0 +1,1 @@
+<h1>Taxonomies admin</h1>

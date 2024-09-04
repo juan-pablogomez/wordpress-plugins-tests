@@ -1,0 +1,1 @@
+<h1>Cutom Post Types Manager</h1>
